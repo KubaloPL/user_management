@@ -1,6 +1,10 @@
+import 
 
 def add_user(user_data): 
-    '''Dodaje nowego użytkownika.'''
+    '''
+    Dodaje nowego użytkownika.
+    '''
+
 
 def remove_user(user_id): 
     '''
