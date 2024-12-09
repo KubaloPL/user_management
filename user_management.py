@@ -23,18 +23,18 @@ def add_user(user_data: dict):
     '''
     load_users_from_file(users)
 
-    if validate_pesel(user_data["pesel"]):
+    if validate_pesel(user_data["pesel"]) == False:
         print("BŁĄD: Nieprawidłowy PESEL")
-        return
-    if validate_nip(user_data["nip"]):
+        return False
+    if validate_nip(user_data["nip"]) == False:
         print("BŁĄD: Nieprawidłowy NIP")
-        return
-    if validate_nip(user_data["regon"]):
+        return False
+    if validate_nip(user_data["regon"]) == False:
         print("BŁĄD: Nieprawidłowy REGON")
-        return
-    if validate_nip(user_data["password"]):
+        return False
+    if validate_nip(user_data["password"]) == False:
         print("BŁĄD: Hasło jest zbyt słabe")
-        return
+        return False
 
     users.append(user_data)
 
@@ -71,11 +71,24 @@ def edit_user(user_id:int, updated_data:dict):
     save_users_to_file(users)
 
 
-def validate_nip(nip): 
+def validate_nip(nip:str): 
     '''
     Waliduje numer NIP.
     '''
-    pass
+    nip = nip.replace('-', '')
+    if len(nip) != 10 or not nip.isdigit(): 
+        print("BŁĄD: NIP powinien być 10 cyfrowym numerem")
+        return False
+
+    digits = [int(i) for i in nip]
+    weights = (6, 5, 7, 2, 3, 4, 5, 6, 7)
+
+    check_sum = sum(d * w for d, w in zip(digits, weights)) % 11
+    if check_sum == digits[9]:
+        return True
+    else:
+        print("BŁĄD: Suma kontrolna numeru NIP nie zgadza się")
+        return False
 
 
 
@@ -83,7 +96,20 @@ def validate_pesel(pesel):
     '''
     Waliduje numer PESEL.
     '''
-    pass
+    if len(pesel) != 11 or not pesel.isdigit(): 
+        print("BŁĄD: PESEL powinien być 11 cyfrowym numerem")
+        return False
+
+    digits = [int(i) for i in pesel]
+    weights = (1, 3, 7, 9, 1, 3, 7, 9, 1, 3)
+
+    check_sum = sum((d * w) % 10 for d, w in zip(digits, weights))
+    check_sum = 10 - (check_sum % 10)
+    if check_sum == digits[10]:
+        return True
+    else:
+        print("BŁĄD: Suma kontrolna numeru PESEL nie zgadza się")
+        return False
 
 
 
@@ -91,7 +117,27 @@ def validate_regon(regon):
     '''
     Waliduje numer REGON.
     '''
-    pass
+    if not(len(regon) == 9 or len(regon) == 14) or not regon.isdigit(): 
+        print("BŁĄD: REGON powinien być 9 lub 14 cyfrowym numerem")
+        return False
+    
+    digits = [int(i) for i in regon]
+    if len(regon) == 9:
+        weights = (8, 9, 2, 3, 4, 5, 6, 7)
+        check_sum = sum(d * w for d, w in zip(digits, weights)) % 11
+        if check_sum == digits[8]:
+            return True
+        else:
+            print("BŁĄD: Suma kontrolna numeru REGON nie zgadza się")
+            return False
+    else:
+        weights = (2, 4, 8, 5, 0 , 9, 7, 3, 6, 1, 2, 4, 8)
+        check_sum = sum(d * w for d, w in zip(digits, weights)) % 11
+        if check_sum == digits[13]:
+            return True
+        else:
+            print("BŁĄD: Suma kontrolna numeru REGON nie zgadza się")
+            return False
 
 
 
@@ -109,7 +155,8 @@ def validate_password(password):
     '''
     pass
 
-load_users_from_file()
+# load_users_from_file()
 
-edit_user(0,{"name": "Hello"})
-remove_user(0)
+# edit_user(0,{"name": "Hello"})
+# remove_user(0)
+
