@@ -17,7 +17,8 @@ def add_user(user_data: dict):
      "nip": 12345,
      "pesel": "59124",
      "regon": 122345,
-     "password": "123"
+     "password": "123",
+     "status": "Registered" -- Registered | Removed
     }
     '''
     load_users_from_file(users)
@@ -53,7 +54,11 @@ def remove_user(user_id):
     '''
     Usuwa istniejącego użytkownika.
     '''
-
+    load_users_from_file()
+    users[user_id]["pesel"] = ""
+    users[user_id]["password"] = ""
+    users[user_id]["status"] = "Removed"
+    save_users_to_file(users)
 
     
 def edit_user(user_id:int, updated_data:dict): 
@@ -105,6 +110,6 @@ def validate_password(password):
     pass
 
 load_users_from_file()
-print(users)
 
 edit_user(0,{"name": "Hello"})
+remove_user(0)
