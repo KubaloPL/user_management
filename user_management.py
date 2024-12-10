@@ -2,11 +2,17 @@ import json
 import random
 import re
 import os
+import string
 
 DATA_PATH = "data/"
 USER_DATABASE_PATH = f"{DATA_PATH}users.json"
 
 users = []
+
+pasword_character_list = ""
+pasword_character_list += string.ascii_letters
+pasword_character_list += string.digits
+pasword_character_list += string.punctuation
 
 def add_user(user_data: dict): 
     '''
@@ -145,18 +151,47 @@ def generate_password():
     '''
     Generuje silne hasło.
     '''
-    pass
+    while True:
+        password = ""
+        for i in range(12):
+            randomchar = random.choice(pasword_character_list)
+            password += randomchar
+        if validate_password(password,dontprint=True) == True:
+            break
+    
+    return password
 
 
     
-def validate_password(password): 
+def validate_password(password,dontprint = None):
     '''
     Waliduje siłę hasła.
     '''
-    pass
+    if len(password) < 12:
+        if dontprint == None:
+            print('BŁĄD: Długość hasła powinna wynosić co najmniej 12 znaków')
+        return False
+    
+    if not any(char.isdigit() for char in password):
+        if dontprint == None:
+            print('BŁĄD: Hasło powinno zawierać co najmniej 1 cyfrę')
+        return False
+    
+    if not any(char.isupper() for char in password):
+        if dontprint == None:
+            print('BŁĄD: Hasło powinno zawierać co najmniej 1 dużą literę')
+        return False
 
-# load_users_from_file()
+    if not any(char.islower() for char in password):
+        if dontprint == None:
+            print('BŁĄD: Hasło powinno zawierać co najmniej 1 małą literę')
+        return False
 
-# edit_user(0,{"name": "Hello"})
-# remove_user(0)
+    if not any(char in string.punctuation for char in password):
+        if dontprint == True:
+            print('BŁĄD: Hasło powinno zawierać co najmniej 1 specjalny znak')
+        return False
+    
+    return True
 
+add_user
