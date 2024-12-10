@@ -33,7 +33,7 @@ Adds a new user to the system after validating their information.
     "nip": "1234567890",
     "pesel": "44051401458",
     "regon": "123456789",
-    "password": "ZflaP2-0z<afVMZ,
+    "password": "ZflaP2-0z<afVMZ",
     "status": "Registered"  # Can be "Registered" or "Removed", as string for further scalability
 }
 ```
