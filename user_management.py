@@ -47,11 +47,17 @@ def add_user(user_data: dict):
     save_users_to_file(users)
 
 def save_users_to_file(users):
+    if not os.path.exists(USER_DATABASE_PATH):
+        open(USER_DATABASE_PATH,"x")
+
     file = open(USER_DATABASE_PATH,"w")
     json.dump(users, file)
     file.close()
 
 def load_users_from_file():
+    if not os.path.exists(USER_DATABASE_PATH):
+        open(USER_DATABASE_PATH,"x")
+
     global users
     file = open(USER_DATABASE_PATH, "r")
     users = json.load(file)
@@ -194,4 +200,22 @@ def validate_password(password,dontprint = None):
     
     return True
 
-add_user
+
+# Example usage:
+
+# # Adding a new user
+# new_user = {
+#     "name": "Jan Kowalski",
+#     "nip": "1234567890",
+#     "pesel": "44051401458",
+#     "regon": "123456789",
+#     "password": generate_password(),
+#     "status": "Registered"
+# }
+# add_user(new_user)
+
+# # Removing a user
+# remove_user(0)
+
+# # Editing a user
+# edit_user(1, {"name": "New Name"})

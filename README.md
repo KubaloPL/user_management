@@ -1,108 +1,139 @@
-# user_management Documentation
+# User Management System Documentation
 
-# Tutorial: System Zarządzania Użytkownikami - `user_management.py`
+## Overview
+This is a Polish user management system written in Python. It supports operations like adding, removing, and editing users with validation checks for NIP, PESEL and REGON and ensures secure passwords.
 
-## Struktura plików i branchy
+## Installation
 
-### Struktura plików:
-- **`user_management.py`**: Główny plik aplikacji do zarządzania użytkownikami.
-- **`data/`**: Katalog do przechowywania danych użytkowników.
-  - **`users.json`**: Plik przechowujący informacje o użytkownikach.
-- **`README.md`**: Dokumentacja projektu.
+```
+ git clone https://github.com/KubaloPL/user_management
+ cd user_management
+```
 
-### Branchy w Git:
-- **`main`**: Główna gałąź projektu zawierająca stabilną wersję aplikacji.
-- **`feature/user_management`**: Gałąź do implementacji funkcji zarządzania użytkownikami.
-- **`feature/password_validation`**: Gałąź do implementacji funkcji walidacji haseł.
+## Dependencies
+- `json`: For JSON file handling
+- `random`: For password generation
+- `string`: For character set manipulations
 
-## Nazwy funkcji:
-- `add_user(user_data)`: Dodaje nowego użytkownika.
-- `remove_user(user_id)`: Usuwa istniejącego użytkownika.
-- `edit_user(user_id, updated_data)`: Edytuje dane użytkownika.
-- `validate_nip(nip)`: Waliduje numer NIP.
-- `validate_pesel(pesel)`: Waliduje numer PESEL.
-- `validate_regon(regon)`: Waliduje numer REGON.
-- `generate_password()`: Generuje silne hasło.
-- `validate_password(password)`: Waliduje siłę hasła.
+## Configuration
+- `DATA_PATH`: Directory for storing user data
+- `USER_DATABASE_PATH`: Path to the users JSON database file
 
----
+## Main Functions
 
-## Sprint 1: Podstawowe Funkcjonalności Zarządzania Użytkownikami
+### User Management
 
-### Milestone 1: Przygotowanie projektu
-1. **Stwórz plik projektu**: Utwórz nowy plik o nazwie `user_management.py`.
-2. **Utwórz strukturę katalogów**: Utwórz katalog `data/` do przechowywania informacji o użytkownikach w pliku `users.json`.
-3. **Importuj biblioteki**: Dodaj niezbędne importy, takie jak `json`, `random`, `re` oraz `os` do pracy z plikami i walidacji.
+#### `add_user(user_data: dict)`
+Adds a new user to the system after validating their information.
 
-### Milestone 2: Implementacja funkcji dodawania i edycji użytkowników
-#### Funkcja `add_user(user_data)`
-- Implementuj funkcję, która dodaje nowego użytkownika do pliku `users.json`.
-- Waliduj numer PESEL, NIP oraz REGON przed dodaniem użytkownika.
-- Funkcje walidacji dodaj jako puste funkcje – kod napiszesz później.
+**User Data Template:**
+```python
+{ # Incremental
+    "name": "Jan Kowalski",
+    "nip": "1234567890",
+    "pesel": "44051401458",
+    "regon": "123456789",
+    "password": "ZflaP2-0z<afVMZ,
+    "status": "Registered"  # Can be "Registered" or "Removed", as string for further scalability
+}
+```
 
-#### Funkcja `edit_user(user_id, updated_data)`
-- Implementuj funkcję do edycji danych istniejącego użytkownika.
-- Wczytaj dane z pliku `users.json`, edytuj odpowiedni rekord i zapisz zmodyfikowane dane z powrotem do pliku.
+**Validation Checks:**
+- PESEL number validation
+- NIP number validation
+- REGON number validation
+- Password strength validation
 
-### Milestone 3: Praca z plikiem `users.json`
-#### Funkcja `remove_user(user_id)`
-- Implementuj funkcję do usuwania użytkownika na podstawie jego identyfikatora.
-- Wczytaj dane z pliku `users.json`, usuń odpowiedni rekord i zapisz zmodyfikowane dane z powrotem do pliku.
+**Returns:** 
+- `True` if user is successfully added
+- `False` if validation fails
 
-#### Funkcja `load_users()`
-- Implementuj funkcję do odczytu istniejących użytkowników z pliku `users.json`.
-- Wyświetl wszystkie zapisane informacje o użytkownikach.
+#### `remove_user(user_id)`
+Removes a user by:
+- Clearing PESEL
+- Clearing password
+- Changing status to "Removed"
 
----
+#### `edit_user(user_id: int, updated_data: dict)`
+Edits user information for a specific user ID.
 
-## Sprint 2: Walidacja i Bezpieczeństwo
+### Validation Functions
 
-### Milestone 1: Walidacja danych użytkownika
-#### Funkcja `validate_nip(nip)`
-- Numer NIP (Numer Identyfikacji Podatkowej) składa się z 10 cyfr.
-- Mechanizm tworzenia numeru NIP obejmuje zastosowanie wagi dla każdej cyfry numeru: `[6, 5, 7, 2, 3, 4, 5, 6, 7]`.
-- Aby zweryfikować NIP:
-  1. Przemnóż każdą z pierwszych dziewięciu cyfr przez odpowiadającą jej wagę.
-  2. Zsumuj wyniki.
-  3. Podziel sumę przez 11 (modulo). Jeśli reszta jest równa ostatniej cyfrze NIP, numer jest poprawny.
-- [Więcej informacji](https://pl.wikipedia.org/wiki/Numer_identyfikacji_podatkowej)
+#### `validate_nip(nip: str)`
+Validates the Polish Tax Identification Number (NIP)
+- Checks length (10 digits)
+- Performs checksum validation
+- Returns `True` if valid, `False` otherwise
 
-#### Funkcja `validate_pesel(pesel)`
-- Implementuj walidację numeru PESEL.
-- Sprawdź datę urodzenia i sumę kontrolną.
-- [Budowa PESEL](https://www.gov.pl/web/gov/czym-jest-numer-pesel)
+#### `validate_pesel(pesel)`
+Validates the Polish Personal Identity Number (PESEL)
+- Checks length (11 digits)
+- Performs checksum validation
+- Returns `True` if valid, `False` otherwise
 
-#### Funkcja `validate_regon(regon)`
-- Implementuj walidację numeru REGON.
-- Sprawdź poprawność sumy kontrolnej.
-- [Budowa REGON](https://pl.wikipedia.org/wiki/REGON)
+#### `validate_regon(regon)`
+Validates the Polish Business Registration Number (REGON)
+- Supports 9 and 14-digit formats
+- Performs checksum validation
+- Returns `True` if valid, `False` otherwise
 
-### Milestone 2: Generowanie i walidacja haseł
-#### Funkcja `generate_password()`
-- Implementuj funkcję generującą silne hasło o minimalnej długości 12 znaków, zawierające:
-  - Duże litery.
-  - Małe litery.
-  - Cyfry.
-  - Znaki specjalne.
+#### `validate_password(password, dontprint=None)`
+Validates password strength
+**Requirements:**
+- Minimum 12 characters
+- At least 1 digit
+- At least 1 uppercase letter
+- At least 1 lowercase letter
+- At least 1 special character
 
-#### Funkcja `validate_password(password)`
-- Implementuj funkcję walidującą siłę hasła, sprawdzając, czy spełnia minimalne wymagania (długość, złożoność, brak popularnych wzorców).
+### Password Generation
 
----
+#### `generate_password()`
+Generates a strong random password
+- Uses a combination of ASCII letters, digits, and punctuation
+- Ensures the generated password meets all validation criteria
 
-## Sprint 3: Testowanie i Dokumentacja
+## File Handling
 
-### Milestone 1: Testowanie funkcjonalności
-#### Testowanie dodawania i edycji użytkowników
-- Przetestuj funkcje `add_user()`, `edit_user()` i `remove_user()`, aby upewnić się, że działają prawidłowo.
-- Sprawdź scenariusze, takie jak brak pliku `users.json`, usuwanie nieistniejącego użytkownika itp.
+### `save_users_to_file(users)`
+Saves the current list of users to a JSON file
 
-### Milestone 2: Walidacja danych
-#### Testowanie walidacji numerów NIP, PESEL, REGON
-- Przetestuj funkcje walidujące, aby upewnić się, że rozpoznają błędne i poprawne dane.
+### `load_users_from_file()`
+Loads users from the JSON file into the global `users` list
 
-### Milestone 3: Dokumentacja
-#### Przygotuj dokumentację
-- Utwórz plik `README.md`, opisując kroki instalacji oraz używania programu.
-- Dodaj instrukcje dotyczące dodawania, edycji, usuwania użytkowników oraz wymagania dotyczące walidacji.
-- Wymień najlepsze praktyki dotyczące zarządzania danymi użytkowników, w tym bezpieczeństwo haseł oraz przechowywanie danych osobowych.
+## Error Handling
+The script provides detailed error messages in Polish for various validation failures, including:
+- Invalid NIP
+- Invalid PESEL
+- Invalid REGON
+- Weak password
+
+## Usage Example
+```python
+# Adding a new user
+new_user = {
+    "name": "Jan Kowalski",
+    "nip": "1234567890",
+    "pesel": "44051401458",
+    "regon": "123456789",
+    "password": generate_password(),
+    "status": "Registered"
+}
+add_user(new_user)
+
+# Removing a user
+remove_user(0)
+
+# Editing a user
+edit_user(1, {"name": "New Name"})
+```
+
+## Notes
+- Ensure the `data/` directory exists before running the script
+- The script uses a global `users` list for managing user data
+- All operations require loading users from the file first
+
+## Security Considerations
+- Passwords are generated with strong randomness
+- Multiple validation checks prevent invalid data entry
+- User removal is soft-delete (status changed to "Removed")
